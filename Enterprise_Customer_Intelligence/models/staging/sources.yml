@@ -1,0 +1,29 @@
+version: 2
+
+sources:
+  - name: raw
+    database: CUSTOMER360
+    schema: RAW
+
+    tables:
+      - name: CUSTOMERS
+
+      - name: CAMPAIGN_EVENTS
+
+      - name: LOYALTY_TRANSACTIONS
+
+      - name: MARKETING_CAMPAIGNS
+
+      - name: ORDERS
+
+      - name: ORDER_ITEMS
+
+      - name: PAYMENTS
+
+      - name: PRODUCTS
+
+      - name: REVIEWS
+
+      - name: SUPPORT_TICKETS
+
+      - name: WEBSITE_SESSIONS

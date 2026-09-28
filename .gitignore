@@ -1,0 +1,30 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# dbt generated files
+target/
+dbt_packages/
+logs/
+
+# dbt local credentials
+profiles.yml
+
+# Environment and secrets
+.env
+.env.*
+*.pem
+*.key
+*.p8
+*.p12
+
+# Power BI temporary files
+*.pbit
+~$*.pbix

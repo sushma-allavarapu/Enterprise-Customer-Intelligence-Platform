@@ -1,0 +1,31 @@
+WITH source_data AS (
+
+    SELECT *
+    FROM {{ source('raw', 'PRODUCTS') }}
+
+),
+
+cleaned_data AS (
+
+    SELECT
+        PRODUCT_ID,
+        UPPER(TRIM(PRODUCT_NAME)) AS PRODUCT_NAME,
+        UPPER(TRIM(CATEGORY)) AS CATEGORY,
+        UPPER(TRIM(SUBCATEGORY)) AS SUBCATEGORY,
+        UPPER(TRIM(BRAND)) AS BRAND,
+        COST_PRICE,
+        SELLING_PRICE,
+        STOCK_QUANTITY,
+        SUPPLIER_ID,
+        LAUNCH_DATE,
+        IS_ACTIVE
+    FROM source_data
+
+)
+
+SELECT *
+FROM cleaned_data
+QUALIFY ROW_NUMBER() OVER (
+    PARTITION BY PRODUCT_ID
+    ORDER BY LAUNCH_DATE DESC
+) = 1

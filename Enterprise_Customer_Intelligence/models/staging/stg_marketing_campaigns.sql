@@ -1,0 +1,29 @@
+WITH source_data AS (
+
+    SELECT *
+    FROM {{ source('raw', 'MARKETING_CAMPAIGNS') }}
+
+),
+
+cleaned_data AS (
+
+    SELECT
+        CAMPAIGN_ID,
+        UPPER(TRIM(CAMPAIGN_NAME)) AS CAMPAIGN_NAME,
+        UPPER(TRIM(CHANNEL)) AS CHANNEL,
+        UPPER(TRIM(OBJECTIVE)) AS OBJECTIVE,
+        UPPER(TRIM(STATUS)) AS STATUS,
+        BUDGET,
+        START_DATE,
+        END_DATE,
+        UPPER(TRIM(TARGET_REGION)) AS TARGET_REGION
+    FROM source_data
+
+)
+
+SELECT *
+FROM cleaned_data
+QUALIFY ROW_NUMBER() OVER (
+    PARTITION BY CAMPAIGN_ID
+    ORDER BY START_DATE DESC
+) = 1

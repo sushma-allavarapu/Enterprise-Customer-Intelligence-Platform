@@ -1,0 +1,32 @@
+WITH source_data AS (
+
+    SELECT *
+    FROM {{ source('raw', 'SUPPORT_TICKETS') }}
+
+),
+
+cleaned_data AS (
+
+    SELECT
+        TICKET_ID,
+        CUSTOMER_ID,
+        ORDER_ID,
+        UPPER(TRIM(ISSUE_TYPE)) AS ISSUE_TYPE,
+        UPPER(TRIM(PRIORITY)) AS PRIORITY,
+        UPPER(TRIM(STATUS)) AS STATUS,
+        UPPER(TRIM(CHANNEL)) AS CHANNEL,
+        OPENED_DATETIME,
+        RESOLVED_DATETIME,
+        TRIM(ASSIGNED_AGENT) AS ASSIGNED_AGENT,
+        RESOLUTION_TIME_HOURS,
+        CSAT_RATING
+    FROM source_data
+
+)
+
+SELECT *
+FROM cleaned_data
+QUALIFY ROW_NUMBER() OVER (
+    PARTITION BY TICKET_ID
+    ORDER BY OPENED_DATETIME DESC
+) = 1

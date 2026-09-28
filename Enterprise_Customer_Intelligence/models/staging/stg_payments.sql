@@ -1,0 +1,29 @@
+WITH source_data AS (
+
+    SELECT *
+    FROM {{ source('raw', 'PAYMENTS') }}
+
+),
+
+cleaned_data AS (
+
+    SELECT
+        PAYMENT_ID,
+        ORDER_ID,
+        CUSTOMER_ID,
+        UPPER(TRIM(PAYMENT_METHOD)) AS PAYMENT_METHOD,
+        UPPER(TRIM(PAYMENT_STATUS)) AS PAYMENT_STATUS,
+        PAYMENT_AMOUNT,
+        UPPER(TRIM(CURRENCY)) AS CURRENCY,
+        TRIM(TRANSACTION_REFERENCE) AS TRANSACTION_REFERENCE,
+        PAYMENT_DATE
+    FROM source_data
+
+)
+
+SELECT *
+FROM cleaned_data
+QUALIFY ROW_NUMBER() OVER (
+    PARTITION BY PAYMENT_ID
+    ORDER BY PAYMENT_DATE DESC
+) = 1

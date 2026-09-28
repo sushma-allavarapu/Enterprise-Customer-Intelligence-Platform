@@ -1,0 +1,240 @@
+version: 2
+
+models:
+
+  # =====================================================
+  # DIMENSIONS
+  # =====================================================
+
+  - name: dim_customer
+    description: "Customer dimension containing customer attributes and analytical classifications."
+
+    columns:
+
+      - name: CUSTOMER_KEY
+        description: "Surrogate key for the customer."
+        data_tests:
+          - not_null
+          - unique
+
+      - name: CUSTOMER_ID
+        description: "Business key identifying the customer."
+        data_tests:
+          - not_null
+          - unique
+
+      - name: AGE
+        description: "Customer age."
+
+
+  - name: dim_product
+    description: "Product dimension containing product attributes and profitability metrics."
+
+    columns:
+
+      - name: PRODUCT_KEY
+        description: "Surrogate key for the product."
+        data_tests:
+          - not_null
+          - unique
+
+      - name: PRODUCT_ID
+        description: "Business key identifying the product."
+        data_tests:
+          - not_null
+          - unique
+
+
+  - name: dim_campaign
+    description: "Marketing campaign dimension."
+
+    columns:
+
+      - name: CAMPAIGN_KEY
+        description: "Surrogate key for the campaign."
+        data_tests:
+          - not_null
+          - unique
+
+      - name: CAMPAIGN_ID
+        description: "Business key identifying the campaign."
+        data_tests:
+          - not_null
+          - unique
+
+
+  - name: dim_date
+    description: "Calendar dimension used for time-based analysis."
+
+    columns:
+
+      - name: DATE_KEY
+        description: "Date key used by fact tables."
+        data_tests:
+          - not_null
+          - unique
+
+      - name: DATE_DAY
+        description: "Calendar date."
+        data_tests:
+          - not_null
+          - unique
+
+
+  - name: dim_location
+    description: "Location dimension containing city, state and country information."
+
+    columns:
+
+      - name: LOCATION_KEY
+        description: "Surrogate key for the location."
+        data_tests:
+          - not_null
+          - unique
+
+
+  # =====================================================
+  # FACT ORDERS
+  # =====================================================
+
+  - name: fact_orders
+    description: "Order-item fact table with one row per order item."
+
+    columns:
+
+      - name: ORDER_ITEM_ID
+        description: "Unique identifier for the order item."
+        data_tests:
+          - not_null
+          - unique
+
+      - name: ORDER_ID
+        description: "Identifier of the order."
+        data_tests:
+          - not_null
+
+      - name: CUSTOMER_KEY
+        description: "Foreign key to dim_customer."
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('dim_customer')
+              field: CUSTOMER_KEY
+
+      - name: PRODUCT_KEY
+        description: "Foreign key to dim_product."
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('dim_product')
+              field: PRODUCT_KEY
+
+      - name: DATE_KEY
+        description: "Foreign key to dim_date."
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('dim_date')
+              field: DATE_KEY
+
+
+  # =====================================================
+  # FACT SESSIONS
+  # =====================================================
+
+  - name: fact_sessions
+    description: "Website session fact table with one row per session."
+
+    columns:
+
+      - name: SESSION_ID
+        description: "Unique identifier for the website session."
+        data_tests:
+          - not_null
+          - unique
+
+      - name: CUSTOMER_KEY
+        description: "Foreign key to dim_customer. Nullable for anonymous sessions."
+        data_tests:
+          - relationships:
+              to: ref('dim_customer')
+              field: CUSTOMER_KEY
+
+      - name: DATE_KEY
+        description: "Foreign key to dim_date."
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('dim_date')
+              field: DATE_KEY
+
+
+  # =====================================================
+  # FACT MARKETING
+  # =====================================================
+
+  - name: fact_marketing
+    description: "Marketing event fact table with one row per campaign event."
+
+    columns:
+
+      - name: EVENT_ID
+        description: "Unique identifier for the marketing event."
+        data_tests:
+          - not_null
+          - unique
+
+      - name: CUSTOMER_KEY
+        description: "Foreign key to dim_customer."
+        data_tests:
+          - relationships:
+              to: ref('dim_customer')
+              field: CUSTOMER_KEY
+
+      - name: CAMPAIGN_KEY
+        description: "Foreign key to dim_campaign."
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('dim_campaign')
+              field: CAMPAIGN_KEY
+
+      - name: DATE_KEY
+        description: "Foreign key to dim_date."
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('dim_date')
+              field: DATE_KEY
+
+
+  # =====================================================
+  # FACT SUPPORT
+  # =====================================================
+
+  - name: fact_support
+    description: "Customer support fact table with one row per support ticket."
+
+    columns:
+
+      - name: TICKET_ID
+        description: "Unique identifier for the support ticket."
+        data_tests:
+          - not_null
+          - unique
+
+      - name: CUSTOMER_KEY
+        description: "Foreign key to dim_customer."
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('dim_customer')
+              field: CUSTOMER_KEY
+
+      - name: DATE_KEY
+        description: "Foreign key to dim_date."
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('dim_date')
+              field: DATE_KEY

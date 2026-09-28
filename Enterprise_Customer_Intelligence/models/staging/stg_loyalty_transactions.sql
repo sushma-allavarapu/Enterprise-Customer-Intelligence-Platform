@@ -1,0 +1,25 @@
+WITH source_data AS (
+
+    SELECT *
+    FROM {{ source('raw', 'LOYALTY_TRANSACTIONS') }}
+
+),
+
+cleaned_data AS (
+
+    SELECT
+        TRANSACTION_ID,
+        CUSTOMER_ID,
+        TRY_TO_DATE(TRANSACTION_DATE) AS TRANSACTION_DATE,
+        UPPER(TRIM(TRANSACTION_TYPE)) AS TRANSACTION_TYPE,
+        POINTS AS POINTS
+    FROM source_data
+
+)
+
+SELECT *
+FROM cleaned_data
+QUALIFY ROW_NUMBER() OVER (
+    PARTITION BY TRANSACTION_ID
+    ORDER BY TRANSACTION_ID
+) = 1

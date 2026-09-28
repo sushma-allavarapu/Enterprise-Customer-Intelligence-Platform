@@ -1,0 +1,34 @@
+WITH source_data AS (
+
+    SELECT *
+    FROM {{ source('raw', 'ORDERS') }}
+
+),
+
+cleaned_data AS (
+
+    SELECT
+        ORDER_ID,
+        CUSTOMER_ID,
+        ORDER_DATE,
+        SHIPPING_DATE,
+        DELIVERY_DATE,
+        UPPER(TRIM(ORDER_STATUS)) AS ORDER_STATUS,
+        UPPER(TRIM(SALES_CHANNEL)) AS SALES_CHANNEL,
+        TRIM(COUPON_CODE) AS COUPON_CODE,
+        DISCOUNT_PCT,
+        TAX_PCT,
+        TOTAL_AMOUNT,
+        UPPER(TRIM(SHIPPING_CITY)) AS SHIPPING_CITY,
+        UPPER(TRIM(SHIPPING_STATE)) AS SHIPPING_STATE,
+        UPPER(TRIM(COUNTRY)) AS COUNTRY
+    FROM source_data
+
+)
+
+SELECT *
+FROM cleaned_data
+QUALIFY ROW_NUMBER() OVER (
+    PARTITION BY ORDER_ID
+    ORDER BY ORDER_DATE DESC
+) = 1
